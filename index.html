@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eyes Follow Mouse Cursor</title>
+
+  <style>
+    body {
+      background-color: aliceblue;
+      margin: 0;
+      padding: 0;
+      grid-template-columns: 1fr;
+      grid-template-rows: 100vh;
+      display: grid;
+      align-items: center;
+      justify-items: center;
+    }
+    .face{
+      width: 450px;
+      height: 450px;
+      background-color: white;
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      will-change: transform;
+      border-radius: 50%;
+      transform: translateZ(50px);
+      margin-top: 10px;
+    }
+
+    .eyesContainer {
+      width: 300px;
+      height: 300px;
+      background-color: darkseagreen;
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      grid-template-columns: 1.5fr 0.5fr 1.5fr;
+      border-radius: 10px;
+      transform-style: preserve-3d;
+      box-shadow: 0 30px 70px #666;
+      will-change: transform;
+      border-radius: 50%;
+      transform: perspective(500px) rotateX(var(--yAngle, 0deg)) rotateY(var(--xAngle, 0deg));
+    }
+
+    .eye {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: white;
+      transform: translateZ(50px) rotate(var(--eyeAngle, 0deg));
+    }
+
+    .pupil {
+      position: relative;
+      width: 16px;
+      height: 16px;
+      background: #000;
+      border-radius: 50%;
+      top: calc(50% - 8px);
+      left: 5px;
+    }
+
+    .nose{
+      margin-top: 40px;
+      height: 10px;
+      width: 20px;
+      background-color: #000;
+      border-radius: 30%;
+      transform: translateZ(50px);
+    }
+
+    .mouth {
+      margin-top: -100px;
+      margin-left: -40px;
+      margin-right: -40px;
+      width: 50px; 
+      height: 30px;  
+      border: solid 5px #000;
+      border-color: #000 transparent transparent transparent;
+      border-radius: 50%/100px 100px 0 0;
+      transform: translateZ(50px) rotateX(180deg) ;
+    }
+
+    .ear{
+      width: 50px; 
+      height: 80px; 
+      border-radius: 50%; 
+      /* position: absolute; */
+      background-color: darkseagreen;
+      margin-bottom: -40px;
+      margin-top: -100px;
+    }
+
+    .ear.left {
+        left: 45px;
+        top: -25px;
+        transform: rotate(-7deg);
+    }
+    .ear.right {
+        right: 45px;
+        top: -25px;
+        transform: rotate(7deg);
+    }
+
+    .our-title{
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      grid-template-columns: 1fr; 
+
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="our-title">
+    <p style="font-size: larger">Tentaflow</p>
+    <p>A New Database Solution</p>
+    <div class="face">
+
+      <div class="eyesContainer">
+  
+        <div class="ear left"></div>
+        <div></div>
+        <div class="ear right"></div>
+  
+        <div class="eye">
+          <div class="pupil"></div>
+        </div>
+        <div class = "nose"></div>
+        <div class="eye">
+          <div class="pupil"></div>
+        </div>
+        <div></div>
+        <div class="mouth"></div>
+        <div></div>
+      </div>
+      
+    </div>
+  </div>
+  
+  
+  <script>
+    
+    let eyes = document.querySelectorAll(".eye");
+    
+    let eyeRect = eyes[0].getBoundingClientRect();
+
+    let container = document.querySelector(".eyesContainer");
+    let containerRect = container.getBoundingClientRect();
+
+    window.addEventListener("resize", updatePosition, false);
+
+    function updatePosition(e) {
+      eyeRect = eyes[0].getBoundingClientRect();
+      containerRect = container.getBoundingClientRect();
+    }
+
+    document.body.addEventListener("mousemove", eyesFollow, false);
+
+    function eyesFollow(e) {
+      requestAnimationFrame(() => {
+        let xPos = e.pageX;
+        let yPos = e.pageY;
+
+        let xDiff = (eyeRect.x + eyeRect.width / 2) - xPos;
+        let yDiff = (eyeRect.y + eyeRect.height / 2) - yPos;
+
+        let angle = Math.atan2(yDiff, xDiff) * 180 / Math.PI;
+
+        container.style.setProperty("--eyeAngle", angle.toFixed(2) + "deg");
+
+        let mouseXRelativetoContainer = xPos - containerRect.x - containerRect.width / 2;
+        let mouseYRelativetoContainer = yPos - containerRect.y - containerRect.height / 2;
+
+        let containerXAngle = 60 * (mouseXRelativetoContainer / window.innerWidth);
+        let containerYAngle = -1 * 60 * (mouseYRelativetoContainer / window.innerHeight);
+
+        container.style.setProperty("--xAngle", containerXAngle.toFixed(2) + "deg");
+        container.style.setProperty("--yAngle", containerYAngle.toFixed(2) + "deg");
+      });
+    }
+  </script>
+</body>
+
+</html>
